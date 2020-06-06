@@ -28,7 +28,7 @@ def get_data():
 
     return {
         "alpha": alpha,
-        "X": X.tolist()
+        "X": X
     }
 
 
