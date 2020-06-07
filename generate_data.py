@@ -4,7 +4,8 @@ import os
 import random
 
 
-params_file_path = os.path.join(os.getcwd(), 'params.json')
+# params_file_path = os.path.join(os.getcwd(), 'params.json')
+params_file_path = os.path.join(os.getcwd(), 'params_set1.json')
 
 
 def get_data():
@@ -18,7 +19,6 @@ def get_data():
     # each column denotes parameters of particular distribution
     theta_a = np.array(params['Theta'])
     theta_b = np.array(params['ThetaB'])
-
     X = np.zeros((k, w))
     for i in range(k):
         distr = theta_a
