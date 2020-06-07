@@ -25,9 +25,40 @@ def expectation(X: np.array, alpha: float, dist_params: list):
     return w
 
 
-def init_em(X: pd.Series, n_distr: int):
-    labels = np.random.choice(list(range(1, n_distr + 1)), size=X.size)
-    alpha = random.random()
+def alpha_new(X, weights):
+    N_k = np.sum(weights, axis=0)
+    return (N_k/X.size)[0]
+
+
+def mu_new(X, weights):
+    N_k = np.sum(weights, axis=0)
+    t = weights.T@X
+    return t / N_k
+
+
+def sigma_new(X, mu, weights):
+    N_k = np.sum(weights, axis=0)
+    X_rep = np.vstack((X.values, X.values))
+    t0 = X_rep - np.reshape(mu, (2, 1))
+    t1 = (X_rep - np.reshape(mu, (2, 1))).T
+    bias_squared = np.vstack((t0[0, :] @ t1[:, 0], t0[1, :] @ t1[:, 1]))
+    weights_scaled = np.sum(weights.T * bias_squared, axis=1)
+    return weights_scaled/N_k
+
+
+def init_em(X: pd.Series):
+    alpha = np.random.beta(a=2, b=2)
     d1, d2 = init_distr_params()
-    weights = expectation(X, alpha, [d1, d2])
-    print()
+
+    for i in range(100):
+        weights = expectation(X, alpha, [d1, d2])
+        alpha = alpha_new(X, weights)
+        mu_prim = mu_new(X, weights)
+        sigma_prim = sigma_new(X, mu_prim, weights)
+
+        d1["mu"] = mu_prim[0]
+        d2["mu"] = mu_prim[1]
+        d1["var"] = sigma_prim[0]
+        d2["var"] = sigma_prim[1]
+
+    return d1, d2, alpha
