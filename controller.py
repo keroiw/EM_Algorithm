@@ -4,7 +4,7 @@ import scipy.stats as stats
 
 
 from generate_data import get_data
-from em import init_em
+from em_gaussian import init_em
 from math import sqrt
 
 
@@ -20,10 +20,19 @@ if __name__ == "__main__":
 
     theta_1 = np.zeros((4, X.shape[1]))
     theta_2 = np.zeros((4, X.shape[1]))
-    alphas = np.zeros(4,)
+    alphas = np.zeros(3,)
     for i, X_t in enumerate(X_treatments):
-        d1, d2, alpha = init_em(X_t)
+        d1, d2, alpha, counter = init_em(X_t)
         theta_1[:, i] = map_to_discr(d1)
         theta_2[:, i] = map_to_discr(d2)
         alphas[i] = alpha
+        print("Step {0} converged in: {1}".format(i+1, counter))
+
+    print('\n')
+    print("Theta 1")
+    print(np.round(theta_1, 4))
+    print("Theta 2")
+    print(np.round(theta_2, 4))
+    print("Alphas")
+    print(alphas)
 
