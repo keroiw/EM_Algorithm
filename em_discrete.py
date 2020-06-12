@@ -64,7 +64,7 @@ def expectation(X: np.array, alpha, theta_a, theta_b):
 
 def alpha_new(X, weights):
     N_k = np.sum(weights, axis=0)
-    return 1-(N_k / np.sum(N_k))[0]
+    return N_k / X.shape[0]
 
 
 def new_theta(X_full, weights_full):
@@ -93,7 +93,7 @@ def init_em(X: pd.Series, w: int):
     counter = 1
     while AlgorithmState.compare(alg_state_old, alg_state_new) and counter < 100:
         weights = expectation(X, alpha, theta_a, theta_b)
-        # alpha = alpha_new(X, weights)
+        alpha = alpha_new(X, weights)[0]
         theta_a, theta_b = new_theta(X, weights)
 
         alg_state_old = alg_state_new
@@ -102,10 +102,3 @@ def init_em(X: pd.Series, w: int):
 
     return theta_a, theta_b, alpha, counter
 
-
-# thetaA = np.array([[0.2,0.2,0.2,0.4], [0.1,0.3,0.3,0.3], [0.5,0.1,0.1,0.3]])
-# thetaB = np.array([[0.1,0.1,0.7,0.1], [0.2,0.3,0.4,0.1], [0.1,0.1,0.1,0.7]])
-# X = np.array([[1,2,3], [2,3,1]])
-# alpha = 0.4
-# w = expectation(X, 0.5, thetaA.T, thetaB.T)
-# print()
