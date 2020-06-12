@@ -19,8 +19,8 @@ def map_to_discr(distr: dict):
     return pdf_vals / np.sum(pdf_vals)
 
 
-def single_run(X, verbose=False):
-    theta_1, theta_2, alpha, counter = init_em(X, X.shape[1])
+def single_run(X, max_rep=1000, verbose=False):
+    theta_1, theta_2, alpha, counter = init_em(X, X.shape[1], max_rep)
 
     if verbose:
         print("Converged in: {0}".format(counter))
@@ -34,14 +34,14 @@ def single_run(X, verbose=False):
     return theta_1, theta_2, alpha
 
 
-def repeat_experiment(source_file: str, dest_file: str, reps=3):
+def repeat_experiment(source_file: str, dest_file: str, reps=3, max_rep=1000):
     theta_a_lst = []
     theta_b_lst = []
 
     true_theta_a, true_theta_b = get_thetas(source_file)
     for i in range(reps):
         X = get_data(source_file)["X"].astype(int)
-        theta_a, theta_b, alpha_1, counter = init_em(X, X.shape[1])
+        theta_a, theta_b, alpha_1, counter = init_em(X, X.shape[1], max_rep)
         theta_a_lst.append(theta_a)
         theta_b_lst.append(theta_b)
 

@@ -84,14 +84,14 @@ def new_theta(X_full, weights_full):
     return estimators_1, estimators_2
 
 
-def init_em(X: pd.Series, w: int):
+def init_em(X: pd.Series, max_rep: int, w: int):
     alpha = 0.5
     theta_a, theta_b = init_distr(w), init_distr(w)
 
     alg_state_old = AlgorithmStateInit(w)
     alg_state_new = AlgorithmStateInit(w)
     counter = 1
-    while AlgorithmState.compare(alg_state_old, alg_state_new) and counter < 100:
+    while AlgorithmState.compare(alg_state_old, alg_state_new) and counter < max_rep:
         weights = expectation(X, alpha, theta_a, theta_b)
         alpha = alpha_new(X, weights)[0]
         theta_a, theta_b = new_theta(X, weights)
