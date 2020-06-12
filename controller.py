@@ -15,7 +15,7 @@ def map_to_discr(distr: dict):
 
 if __name__ == "__main__":
     X = get_data()["X"].astype(int)
-    theta_1, theta_2, alpha, counter = init_em(X, 3)
+    theta_1, theta_2, alpha, counter = init_em(X, X.shape[1])
     print("Converged in: {0}".format(counter))
     print("Theta 1")
     print(np.round(theta_1, 3))

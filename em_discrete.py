@@ -56,9 +56,9 @@ def expectation(X: np.array, alpha, theta_a, theta_b):
     weights_mtrx = np.vstack((cond_1, cond_2)).T
     alphas = np.array([alpha, 1 - alpha])
     cond_sums = weights_mtrx @ alphas.reshape((2, 1))
-    weights_mtrx[:, 0] = (alpha * weights_mtrx[:, 0]) / cond_sums.flatten()
-    weights_mtrx[:, 1] = ((1 - alpha) * weights_mtrx[:, 1]) / cond_sums.flatten()
-
+    weights_mtrx = weights_mtrx / cond_sums
+    weights_mtrx[:, 0] = alpha * weights_mtrx[:, 0]
+    weights_mtrx[:, 1] = (1 - alpha) * weights_mtrx[:, 1]
     return weights_mtrx
 
 
@@ -101,3 +101,11 @@ def init_em(X: pd.Series, w: int):
         counter += 1
 
     return theta_a, theta_b, alpha, counter
+
+
+# thetaA = np.array([[0.2,0.2,0.2,0.4], [0.1,0.3,0.3,0.3], [0.5,0.1,0.1,0.3]])
+# thetaB = np.array([[0.1,0.1,0.7,0.1], [0.2,0.3,0.4,0.1], [0.1,0.1,0.1,0.7]])
+# X = np.array([[1,2,3], [2,3,1]])
+# alpha = 0.4
+# w = expectation(X, 0.5, thetaA.T, thetaB.T)
+# print()
