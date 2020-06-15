@@ -2,11 +2,12 @@ import json
 import numpy as np
 import os
 import scipy.stats as stats
+import matplotlib.pyplot as plt
 
 
 from generate_data import get_data, get_thetas
 from functools import reduce
-from em_discrete import init_em
+from em_discrete import init_em, init_em_val
 from math import sqrt
 
 
@@ -19,8 +20,8 @@ def map_to_discr(distr: dict):
     return pdf_vals / np.sum(pdf_vals)
 
 
-def single_run(X, max_rep=1000, verbose=False):
-    theta_1, theta_2, alpha, counter = init_em(X, X.shape[1], max_rep)
+def single_run(X, max_rep=1000, verbose=False, est_alpha="no", alpha=0.5):
+    theta_1, theta_2, alpha, counter = init_em(X, X.shape[1], max_rep, est_alpha, alpha)
 
     if verbose:
         print("Converged in: {0}".format(counter))
@@ -34,14 +35,14 @@ def single_run(X, max_rep=1000, verbose=False):
     return theta_1, theta_2, alpha
 
 
-def repeat_experiment(source_file: str, dest_file: str, reps=3, max_rep=1000):
+def repeat_experiment(source_file: str, dest_file: str, reps=3, max_rep=1000, est_alpha="no", alpha=0.5):
     theta_a_lst = []
     theta_b_lst = []
 
     true_theta_a, true_theta_b = get_thetas(source_file)
     for i in range(reps):
         X = get_data(source_file)["X"].astype(int)
-        theta_a, theta_b, alpha_1, counter = init_em(X, X.shape[1], max_rep)
+        theta_a, theta_b, alpha_1, counter = init_em(X, X.shape[1], max_rep, est_alpha, alpha=0.5)
         theta_a_lst.append(theta_a)
         theta_b_lst.append(theta_b)
 
