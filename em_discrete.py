@@ -84,8 +84,10 @@ def new_theta(X_full, weights_full):
     return estimators_1, estimators_2
 
 
-def init_em(X: pd.Series, max_rep: int, w: int):
-    alpha = 0.5
+def init_em(X: pd.Series, max_rep: int, w: int, est_alpha, alpha):
+
+    if est_alpha == "yes":
+        alpha = 0.5
     theta_a, theta_b = init_distr(w), init_distr(w)
 
     alg_state_old = AlgorithmStateInit(w)
@@ -93,12 +95,49 @@ def init_em(X: pd.Series, max_rep: int, w: int):
     counter = 1
     while AlgorithmState.compare(alg_state_old, alg_state_new) and counter < max_rep:
         weights = expectation(X, alpha, theta_a, theta_b)
-        alpha = alpha_new(X, weights)[0]
+
+        if est_alpha == "yes":
+            alpha = alpha_new(X, weights)[0]
         theta_a, theta_b = new_theta(X, weights)
 
         alg_state_old = alg_state_new
         alg_state_new = AlgorithmState(theta_a, theta_b)
+
         counter += 1
 
     return theta_a, theta_b, alpha, counter
 
+
+def init_em_val(X: pd.Series, max_rep: int, w: int, est_alpha: str, alpha: float, theta_a_org: np.array, theta_b_org: np.array):
+
+    if est_alpha == "yes":
+        alpha = 0.5
+    theta_a, theta_b = init_distr(w), init_distr(w)
+
+    norms_a = []
+    norms_b = []
+    alpha_lst = []
+
+    alg_state_old = AlgorithmStateInit(w)
+    alg_state_new = AlgorithmStateInit(w)
+
+    counter = 1
+    while AlgorithmState.compare(alg_state_old, alg_state_new) and counter < max_rep:
+        weights = expectation(X, alpha, theta_a, theta_b)
+
+        if est_alpha == "yes":
+            alpha = alpha_new(X, weights)[0]
+            alpha_lst.append(alpha)
+        theta_a, theta_b = new_theta(X, weights)
+
+        alg_state_old = alg_state_new
+        alg_state_new = AlgorithmState(theta_a, theta_b)
+
+        norm_a = np.linalg.norm(theta_a - theta_a_org)
+        norm_b = np.linalg.norm(theta_b - theta_b_org)
+        norms_a.append(norm_a)
+        norms_b.append(norm_b)
+
+        counter += 1
+
+    return counter, norms_a, norms_b, alpha_lst
