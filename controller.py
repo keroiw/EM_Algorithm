@@ -2,7 +2,6 @@ import json
 import numpy as np
 import os
 import scipy.stats as stats
-import matplotlib.pyplot as plt
 
 
 from generate_data import get_data, get_thetas
@@ -21,7 +20,7 @@ def map_to_discr(distr: dict):
 
 
 def single_run(X, max_rep=1000, verbose=False, est_alpha="no", alpha=0.5):
-    theta_1, theta_2, alpha, counter = init_em(X, X.shape[1], max_rep, est_alpha, alpha)
+    theta_1, theta_2, alpha, counter = init_em(X, max_rep, est_alpha=est_alpha, alpha=alpha)
 
     if verbose:
         print("Converged in: {0}".format(counter))
@@ -35,14 +34,14 @@ def single_run(X, max_rep=1000, verbose=False, est_alpha="no", alpha=0.5):
     return theta_1, theta_2, alpha
 
 
-def repeat_experiment(source_file: str, dest_file: str, reps=3, max_rep=1000, est_alpha="no", alpha=0.5):
+def repeat_experiment(source_file: str, dest_file: str, reps=3, max_rep=1000, est_alpha="no"):
     theta_a_lst = []
     theta_b_lst = []
 
     true_theta_a, true_theta_b = get_thetas(source_file)
     for i in range(reps):
         X = get_data(source_file)["X"].astype(int)
-        theta_a, theta_b, alpha_1, counter = init_em(X, X.shape[1], max_rep, est_alpha, alpha=0.5)
+        theta_a, theta_b, alpha_1, counter = init_em(X, max_rep, est_alpha=est_alpha, alpha=0.5)
         theta_a_lst.append(theta_a)
         theta_b_lst.append(theta_b)
 
@@ -68,8 +67,9 @@ def read_results(source_file: str):
 
 
 if __name__ == "__main__":
-    # X = get_data(params_file_path)["X"].astype(int)
+    X = get_data(params_file_path)["X"].astype(int)
+    single_run(X, verbose=True)
     # theta_1, theta_2, alpha = single_run(X, verbose=True)
-    dest_file = os.path.join(os.getcwd(), 'saved_simulations', 'test.json')
-    repeat_experiment(params_file_path, dest_file)
-    read_results(dest_file)
+    #dest_file = os.path.join(os.getcwd(), 'saved_simulations', 'test.json')
+    #repeat_experiment(params_file_path, dest_file)
+    #read_results(dest_file)

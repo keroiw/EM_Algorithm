@@ -13,13 +13,13 @@ class AlgorithmStateBase:
         self.theta_b = theta_b
 
     @staticmethod
-    def compare(obj1, obj2, thresh=10e-2):
+    def compare(obj1, obj2, thresh=10e-6):
         theta_a1 = obj1.theta_a.flatten()
-        theta_a2 = obj1.theta_a.flatten()
-        theta_b1 = obj2.theta_b.flatten()
+        theta_a2 = obj1.theta_b.flatten()
+        theta_b1 = obj2.theta_a.flatten()
         theta_b2 = obj2.theta_b.flatten()
-        theta_a_norm = np.linalg.norm(theta_a1 - theta_a2) < thresh
-        theta_b_norm = np.linalg.norm(theta_b1 - theta_b2) < thresh
+        theta_a_norm = np.linalg.norm(theta_a1 - theta_b1)
+        theta_b_norm = np.linalg.norm(theta_a2 - theta_b2)
         return isinstance(obj1, AlgorithmStateInit) or all(np.array([theta_a_norm, theta_b_norm]) > thresh)
 
 
@@ -84,10 +84,12 @@ def new_theta(X_full, weights_full):
     return estimators_1, estimators_2
 
 
-def init_em(X: pd.Series, max_rep: int, w: int, est_alpha, alpha):
+def init_em(X: pd.Series, max_rep: int, alpha, est_alpha="no"):
 
     if est_alpha == "yes":
         alpha = 0.5
+
+    w = X.shape[1]
     theta_a, theta_b = init_distr(w), init_distr(w)
 
     alg_state_old = AlgorithmStateInit(w)
