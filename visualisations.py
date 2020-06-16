@@ -1,15 +1,16 @@
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import seaborn as sns
 from em_discrete import init_em_val
 
 
 def show_distributions(theta_a_est, theta_b_est, theta_a, theta_b):
-    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(12,5))
+    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(12, 5))
     cmap = sns.color_palette("YlGnBu")
 
     def make_heatmap(ax, theta, x_ticks=True, y_ticks=True):
-        theta = pd.DataFrame(theta)
+        theta = pd.DataFrame(theta).round(3)
         theta["Support"] = [str(i) for i in range(1, 5)]
         theta.set_index("Support", inplace=True)
         heatmap = sns.heatmap(theta,
@@ -36,21 +37,21 @@ def show_distributions(theta_a_est, theta_b_est, theta_a, theta_b):
 def plot_convergence(X, theta_a_org, theta_b_org, max_rep=1000, est_alpha="no", alpha=0.5):
 
     counter, norms_a, norms_b, alpha_lst = init_em_val(X, max_rep,  X.shape[1], est_alpha, alpha, theta_a_org, theta_b_org)
+    fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(12, 5))
 
-    plt.plot(range(1, counter), norms_a)
-    plt.title("convergence")
-    plt.xlabel("iterations")
-    plt.ylabel(r'$\Vert\hat\Theta - \Theta\Vert_2$')
-    plt.show()
+    norms = [np.array(n) for n in (norms_a, norms_b, alpha_lst)]
+    norms = np.vstack(norms).T
+    norms = pd.DataFrame(norms, columns=["ThetaA", "ThetaB", "Alpha"])
+    norms["iterations"] = np.array(list(range(1, counter)))
 
-    plt.plot(range(1, counter), norms_b)
-    plt.title("convergence")
-    plt.xlabel("iterations")
-    plt.ylabel(r'$\Vert\hat\Theta^B - \Theta^B\Vert_2$')
-    plt.show()
+    #fig.suptitle("Estimators difference in subsequent iterations", fontsize=14)
+    sns.lineplot(x="iterations", y="ThetaA", data=norms, ax=ax1)
+    ax1.set(ylabel=r'$\Vert\hat\Theta - \Theta\Vert_2$')
 
-    plt.plot(range(1, counter), alpha_lst)
-    plt.title("convergence")
-    plt.ylabel(r'$\hat\alpha$')
-    plt.xlabel("iterations")
+    sns.lineplot(x="iterations", y="ThetaB", data=norms, ax=ax2)
+    ax2.set(ylabel=r'$\Vert\hat\Theta^B - \Theta^B\Vert_2$')
+
+    sns.lineplot(x="iterations", y="Alpha", data=norms, ax=ax3)
+    ax3.set(ylabel=r'$\hat\alpha$')
+    plt.tight_layout()
     plt.show()
