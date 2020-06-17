@@ -13,11 +13,10 @@ def ParseArguments():
     
     
 param_file, output_file = ParseArguments()
- 
 
 with open(param_file, 'r') as inputfile:
     params = json.load(inputfile)
- 
+
 
 w = params['w']
 k = params['k']
@@ -28,10 +27,12 @@ theta_b = np.asarray(params['ThetaB'])
 
 X = np.zeros((k, w))
 for i in range(k):
-    distr = theta_a
     if random.random() < alpha:
+        distr = theta_a
+        X[i, :] = [np.random.choice([1, 2, 3, 4], size=1, p=distr[:, i]) for i in range(w)]
+    else:
         distr = theta_b
-    X[i, :] = [np.random.choice([1, 2, 3, 4], size=1, p=distr[:, i]) for i in range(w)]
+        X[i, :] = np.random.choice([1, 2, 3, 4], size=w, p=distr)
 
 
 gen_data = {    
