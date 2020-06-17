@@ -26,9 +26,10 @@ def get_data(source_file: str):
     X = np.zeros((k, w))
     for i in range(k):
         distr = theta_a
-        if random.random() < alpha:
+        if random.random() > alpha:
             distr = theta_b
         X[i, :] = [np.random.choice([1, 2, 3, 4], size=1, p=distr[:, i]) for i in range(w)]
+
 
     return {
         "alpha": alpha,
