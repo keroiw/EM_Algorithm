@@ -6,7 +6,7 @@ import scipy.stats as stats
 
 from generate_data import get_data, get_thetas
 from functools import reduce
-from em_discrete import init_em, init_em_val
+from em_discrete import init_em
 from math import sqrt
 
 
@@ -34,10 +34,11 @@ def single_run(X, max_rep=1000, verbose=False, est_alpha="no", alpha=0.5):
     return theta_1, theta_2, alpha
 
 
-def repeat_experiment(source_file: str, dest_file: str, reps=3, max_rep=1000, est_alpha="no", alpha=0.5):
+def repeat_experiment(source_file: str, dest_file: str, reps=5, max_rep=1000, est_alpha="no", alpha=0.5):
     theta_a_lst = []
     theta_b_lst = []
     alphas_est = []
+    counters = []
 
     true_theta_a, true_theta_b = get_thetas(source_file)
     for i in range(reps):
@@ -46,6 +47,7 @@ def repeat_experiment(source_file: str, dest_file: str, reps=3, max_rep=1000, es
         theta_a_lst.append(theta_a)
         theta_b_lst.append(theta_b)
         alphas_est.append(est_alpha)
+        counters.append(counter)
 
     theta_a_est = reduce(lambda x, y: x + y, theta_a_lst) / len(theta_a_lst)
     theta_b_est = reduce(lambda x, y: x + y, theta_b_lst) / len(theta_b_lst)
@@ -55,7 +57,8 @@ def repeat_experiment(source_file: str, dest_file: str, reps=3, max_rep=1000, es
                 "theta_b_est": theta_b_est.tolist(),
                 "theta_a": true_theta_a.tolist(),
                 "theta_b": true_theta_b.tolist(),
-                "alpha": alpha_est}
+                "alpha": alpha_est,
+                "counters": counters}
 
     with open(dest_file, 'w') as outfile:
         json.dump(res_dict, outfile)
