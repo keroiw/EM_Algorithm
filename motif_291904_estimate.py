@@ -25,13 +25,13 @@ class AlgorithmStateBase:
         self.theta_b = theta_b
 
     @staticmethod
-    def compare(obj1, obj2, thresh=10e-2):
+    def compare(obj1, obj2, thresh=10e-6):
         theta_a1 = obj1.theta_a.flatten()
-        theta_a2 = obj1.theta_a.flatten()
-        theta_b1 = obj2.theta_b.flatten()
+        theta_a2 = obj1.theta_b.flatten()
+        theta_b1 = obj2.theta_a.flatten()
         theta_b2 = obj2.theta_b.flatten()
-        theta_a_norm = np.linalg.norm(theta_a1 - theta_a2) < thresh
-        theta_b_norm = np.linalg.norm(theta_b1 - theta_b2) < thresh
+        theta_a_norm = np.linalg.norm(theta_a1 - theta_b1)
+        theta_b_norm = np.linalg.norm(theta_a2 - theta_b2)
         return isinstance(obj1, AlgorithmStateInit) or all(np.array([theta_a_norm, theta_b_norm]) > thresh)
 
 
