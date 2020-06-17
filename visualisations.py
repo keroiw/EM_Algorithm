@@ -37,21 +37,18 @@ def show_distributions(theta_a_est, theta_b_est, theta_a, theta_b):
 def plot_convergence(X, theta_a_org, theta_b_org, max_rep=1000, est_alpha="no", alpha=0.5):
 
     counter, norms_a, norms_b, alpha_lst = init_em_val(X, max_rep,  X.shape[1], est_alpha, alpha, theta_a_org, theta_b_org)
-    fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(12, 5))
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
 
     norms = [np.array(n) for n in (norms_a, norms_b, alpha_lst)]
     norms = np.vstack(norms).T
     norms = pd.DataFrame(norms, columns=["ThetaA", "ThetaB", "Alpha"])
     norms["iterations"] = np.array(list(range(1, counter)))
 
-    #fig.suptitle("Estimators difference in subsequent iterations", fontsize=14)
-    sns.lineplot(x="iterations", y="ThetaA", data=norms, ax=ax1)
-    ax1.set(ylabel=r'$\Vert\hat\Theta - \Theta\Vert_2$')
+    fig.suptitle("Estimators difference in subsequent iterations", fontsize=14)
+    sns.lineplot(x="Iterations", y="ThetaA", data=norms, ax=ax1)
+    ax1.set(ylabel=r'$\Vert\hat\Theta^A - \Theta^A\Vert_2$')
 
-    sns.lineplot(x="iterations", y="ThetaB", data=norms, ax=ax2)
+    sns.lineplot(x="Iteration", y="ThetaB", data=norms, ax=ax2)
     ax2.set(ylabel=r'$\Vert\hat\Theta^B - \Theta^B\Vert_2$')
 
-    sns.lineplot(x="iterations", y="Alpha", data=norms, ax=ax3)
-    ax3.set(ylabel=r'$\hat\alpha$')
-    plt.tight_layout()
     plt.show()
