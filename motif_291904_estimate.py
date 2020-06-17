@@ -53,6 +53,12 @@ def init_distr(w):
     return theta/theta_sum
 
 
+def init_distrB(w):
+    theta = np.repeat(np.random.rand(4), w).reshape(4, -1)
+    theta_sum = np.sum(np.repeat(theta, w), axis=0)
+    return theta/theta_sum
+
+
 def expectation(X: np.array, alpha, theta_a, theta_b):
 
     def get_cond_prob(X, theta):
@@ -96,24 +102,28 @@ def new_theta(X_full, weights_full):
     return estimators_1, estimators_2
 
 
-def init_em(X: np.array, max_rep: int, w: int, est_alpha: str, alpha: float):
+def init_em(X: np.array, max_rep: int, alpha, est_alpha="no"):
 
     if est_alpha == "yes":
         alpha = 0.5
 
-    theta_a, theta_b = init_distr(w), init_distr(w)
+    w = X.shape[1]
+    theta_a = init_distr(w)
+    theta_b = init_distrB(w)
 
     alg_state_old = AlgorithmStateInit(w)
     alg_state_new = AlgorithmStateInit(w)
     counter = 1
     while AlgorithmState.compare(alg_state_old, alg_state_new) and counter < max_rep:
         weights = expectation(X, alpha, theta_a, theta_b)
+
         if est_alpha == "yes":
             alpha = alpha_new(X, weights)[0]
         theta_a, theta_b = new_theta(X, weights)
 
         alg_state_old = alg_state_new
         alg_state_new = AlgorithmState(theta_a, theta_b)
+
         counter += 1
 
     return theta_a, theta_b, alpha, counter
@@ -130,7 +140,8 @@ if __name__ == "__main__":
     X = np.asarray(data['X'])
     X = X.astype(int)
 
-    Theta, ThetaB, alpha, counter = init_em(X, 1000, X.shape[1], estimate_alpha, alpha)
+    Theta, ThetaB, alpha, counter = init_em(X, 1000, alpha, estimate_alpha)
+    ThetaB = np.mean(ThetaB, 1)
 
     estimated_params = {
         "alpha": alpha,
